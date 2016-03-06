@@ -1,0 +1,13 @@
+
+**************************************************
+*
+* Initial Release
+*
+**************************************************
+
+o Future plans
+   - Implement additional features for miRNA name translation function, such as
+      determine most likely miRBase version of a given set of miRNAs, or give
+      user the option to pass on the miRBase version, so that miRNAs that
+      swapped MIMAT-accession can be translated as well.
+
