@@ -6,16 +6,17 @@ output:
    rmarkdown::html_vignette:
     toc: yes
     toc_depth: 3
+    
 csl: apa.csl
 bibliography: references.bib
 vignette: >
-   %\\VignetteIndexEntry{miRNAmeConverter-vignette}
-   %\\VignetteEncoding{UTF-8}
-   %\\VignetteEngine{knitr::rmarkdown}
+   %\VignetteIndexEntry{miRNAmeConverter-vignette}
+   %\VignetteEncoding{UTF-8}
+   %\VignetteEngine{knitr::rmarkdown}
 ---
 
 <!-- output:
-
+rmarkdown::html_vignette:
    rmarkdown::pdf_document:
     toc: yes
     toc_depth: 3--> 
