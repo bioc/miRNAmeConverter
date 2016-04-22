@@ -1,7 +1,7 @@
 Package: miRNAmeConverter
 Type: Package
 Title: Convert miRNA Names to Different miRBase Versions
-Version: 0.99.9
+Version: 0.99.10
 Authors@R: person("Stefan", "Haunsberger", email =
         "stefan.haunsberger@gmail.com", role = c("aut", "cre"))
 Description: Package containing an S4 class for translating mature
@@ -13,7 +13,7 @@ Imports: DBI, AnnotationDbi
 Depends: miRBaseVersions.db
 biocViews: Preprocessing, miRNA
 LazyData: TRUE
-Suggests: testthat, knitr, rmarkdown
+Suggests: methods, testthat, knitr, rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 NeedsCompilation: no

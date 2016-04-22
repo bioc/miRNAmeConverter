@@ -129,6 +129,16 @@ setMethod(
    }
 )
 
+#'
+#'
+.check = function(input) {
+    # Correct 'mir-' with 'miR-'
+    output = gsub("mir-", "miR-", input, ignore.case = TRUE);
+    # Remove quotations (single and double)
+    output = gsub("\"|\'", "", output);
+    return(output);
+}
+
 ##### MiRNANameConverter - constructor ####
 #' @title MiRNANameConverter constructor
 #'
@@ -523,6 +533,8 @@ setMethod(
          if (!(class(miRNAs) == "character")) {
             stop(sprintf("Class of miRNAs ('%s') should be 'character'.\nPlease try again with a valid class.", class(miRNAs)));
          }
+         # Substitute characters/clean
+         miRNAs = .check(miRNAs);
          miRNAs.unique = unique(miRNAs);
          if (length(miRNAs.unique) != length(miRNAs)) {
             message(sprintf("\tInput: %i unique miRNA names",
@@ -548,6 +560,7 @@ setMethod(
                                information = "OK",
                                stringsAsFactors = FALSE,
                                row.names = miRNAs.unique);
+      # print(description)
 
       ###### ### ###
       # 1) Check for MIMAT swapping miRNAs
@@ -577,10 +590,15 @@ setMethod(
       # 2) Check which entries are acutally miRNAs listed in the miRBase repository
 
       ## Only process miRNAs that are valid miRNA names
-      miRNAs.valid = suppressMessages(checkMiRNAName(this, miRNAs.not.swapping, verbose = verbose));
+      miRNAs.valid = suppressMessages(checkMiRNAName(this,
+                                                     miRNAs.not.swapping,
+                                                     correct = TRUE,
+                                                     verbose = verbose));
       miRNAs.not.valid = miRNAs.not.swapping[!(toupper(miRNAs.not.swapping) %in% toupper(miRNAs.valid))];
       n.miRNAs.valid = length(miRNAs.valid);
       n.miRNAs.dif = length(miRNAs.not.swapping) - n.miRNAs.valid;
+      
+      # print(miRNAs.valid)
 
       if (length(miRNAs.valid) == 0) {
          message("No valid miRNAs found.");

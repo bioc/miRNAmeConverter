@@ -3,7 +3,7 @@ title: "miRNAmeConverter-vignette"
 author: "Stefan Haunsberger"
 date: '`r Sys.Date()`'
 output:
-   rmarkdown::html_vignette:
+   rmarkdown::pdf_document:
     toc: yes
     toc_depth: 3
     
@@ -41,6 +41,13 @@ services, such as miRNA target databases.
 
 The _miRNAmeConverter_ R package has been developed for handling naming 
 challenges of mature miRNAs.
+
+In addition we have developed a web interface that enables one to use the 
+`translateMiRNAName` function via web interface and is based on shiny 
+([miRNAmeConverter-web](http://neuromir.eu/tools-for-research/mirnameconverter/)).
+
+The application runs on port 3838, so if the application does not show up
+please make sure your device is able to connect through port 3838.
   
 ## 1. Introduction
 
