@@ -1,7 +1,7 @@
 Package: miRNAmeConverter
 Type: Package
 Title: Convert miRNA Names to Different miRBase Versions
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: person("Stefan", "Haunsberger", email =
         "stefan.haunsberger@gmail.com", role = c("aut", "cre"))
 Description: Package containing an S4 class for translating mature
