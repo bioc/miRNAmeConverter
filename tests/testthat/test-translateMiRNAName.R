@@ -30,7 +30,7 @@ test_that("Checking only miRNA name return value", {
 
 		});
 
-test_that("Checking attribute 'description' as well", {
+test_that("Checking attribute 'description' and 'sequence'", {
 
 			miRNAs = c("sla-miR-29b", "ebv-miR-BART3-5p", "mmu-miR-302b*",
 			           "mmu-miR-872", "ebv-miR-BART5", "bpcv1-miR-B23");
@@ -52,17 +52,35 @@ test_that("Checking attribute 'description' as well", {
 			                              "mmu-miR-872", "sla-miR-29b"),
 			              information = c("This name is not listed in any miRBase version.",
 			                              "OK", "OK", "OK", "OK", "OK"),
+			              row.names = c("bpcv1-miR-B23",
+			                            "ebv-miR-BART3-5p",
+			                            "ebv-miR-BART5",
+			                            "mmu-miR-302b*",
+			                            "mmu-miR-872", "sla-miR-29b"),
                      stringsAsFactors = FALSE);
-			rownames(attr(target,'description')) = c("bpcv1-miR-B23",
-			                                         "ebv-miR-BART3-5p",
-			                                         "ebv-miR-BART5",
-			                                         "mmu-miR-302b*",
-			                                         "mmu-miR-872", "sla-miR-29b");
+			
+			attr(target, 'sequence') =
+			    data.frame(mimat = c("MIMAT0002440", "MIMAT0003373",
+			                         "MIMAT0003410", "MIMAT0003413",
+			                         "MIMAT0004934"),
+                        input = c("sla-miR-29b", "mmu-miR-302b*",
+                                  "ebv-miR-BART3-5p", "ebv-miR-BART5",
+                                  "mmu-miR-872"),
+		                v21.0 = c("UAGCACCAUUUGAAAUCAGU",
+		                          "ACUUUAACAUGGGAAUGCUUUCU",
+		                          "ACCUAGUGUUAGUGUUGUGCU",
+		                          "CAAGGUGAAUAUAGCUGCCCAUCG",
+		                          "AAGGUUACUUGUUAGUUCAGG"),
+			               row.names = c("MIMAT0002440", "MIMAT0003373",
+			                             "MIMAT0003410", "MIMAT0003413",
+			                             "MIMAT0004934"),
+			               stringsAsFactors = FALSE);
+			
 			expect_equal(translateMiRNAName(nc, miRNAs, verbose = FALSE), target);
 
 		});
 
-test_that("Checking attribute 'description' as well with parameter 'current'", {
+test_that("Checking attribute 'description' as well incl. sequenceFormat=2", {
 
 			miRNAs = c("sla-miR-29b", "ebv-miR-BART3-5p", "mmu-miR-302b*",
 			           "mmu-miR-872", "ebv-miR-BART5", "bpcv1-miR-B23");
@@ -71,27 +89,48 @@ test_that("Checking attribute 'description' as well with parameter 'current'", {
 			                              "MIMAT0004934"),
 					input = c("sla-miR-29b", "mmu-miR-302b*", "ebv-miR-BART3-5p",
 					          "ebv-miR-BART5", "mmu-miR-872"),
-					current = c("sla-miR-29b", "mmu-miR-302b-5p", "ebv-miR-BART3-5p",
-					            "ebv-miR-BART5-5p", "mmu-miR-872-5p"),
 					v21.0 = c("sla-miR-29b", "mmu-miR-302b-5p", "ebv-miR-BART3-5p",
 					          "ebv-miR-BART5-5p", "mmu-miR-872-5p"),
+					row.names = c("MIMAT0002440", "MIMAT0003373", "MIMAT0003410",
+					              "MIMAT0003413", "MIMAT0004934"),
 					stringsAsFactors = FALSE);
-			rownames(target) = c("MIMAT0002440", "MIMAT0003373", "MIMAT0003410",
-			                     "MIMAT0003413", "MIMAT0004934");
 			attr(target, 'description') =
 			   data.frame(input.miRNA = c("bpcv1-miR-B23", "ebv-miR-BART3-5p",
 			                              "ebv-miR-BART5", "mmu-miR-302b*",
 			                              "mmu-miR-872", "sla-miR-29b"),
 					information = c("This name is not listed in any miRBase version.",
 					                "OK", "OK", "OK", "OK", "OK"),
+					row.names = c("bpcv1-miR-B23",
+					              "ebv-miR-BART3-5p",
+					              "ebv-miR-BART5",
+					              "mmu-miR-302b*",
+					              "mmu-miR-872", "sla-miR-29b"),
 					stringsAsFactors = FALSE);
-			rownames(attr(target,'description')) = c("bpcv1-miR-B23",
-			                                         "ebv-miR-BART3-5p",
-			                                         "ebv-miR-BART5",
-			                                         "mmu-miR-302b*",
-			                                         "mmu-miR-872", "sla-miR-29b");
-			expect_equal(translateMiRNAName(nc, miRNAs, verbose = FALSE,
-			                                current = TRUE), target);
+			attr(target, 'sequence') =
+			    data.frame(mimat = c("MIMAT0002440", "MIMAT0003373",
+			                         "MIMAT0003410", "MIMAT0003413",
+			                         "MIMAT0004934"),
+			               input = c("sla-miR-29b", "mmu-miR-302b*",
+			                         "ebv-miR-BART3-5p",
+			                         "ebv-miR-BART5", "mmu-miR-872"),
+			               v21.0m = c("sla-miR-29b", "mmu-miR-302b-5p",
+			                          "ebv-miR-BART3-5p", "ebv-miR-BART5-5p",
+			                          "mmu-miR-872-5p"),
+			               v21.0s = c("UAGCACCAUUUGAAAUCAGU",
+			                         "ACUUUAACAUGGGAAUGCUUUCU",
+			                         "ACCUAGUGUUAGUGUUGUGCU",
+			                         "CAAGGUGAAUAUAGCUGCCCAUCG",
+			                         "AAGGUUACUUGUUAGUUCAGG"),
+			               row.names = c("MIMAT0002440", "MIMAT0003373",
+			                             "MIMAT0003410", "MIMAT0003413",
+			                             "MIMAT0004934"),
+			               stringsAsFactors = FALSE);
+		    names(attr(target, 'sequence')) = c("mimat", "input", "v21.0-miRNA",
+		                                        "v21.0-Sequence");
+			expect_equal(translateMiRNAName(nc,
+			                                miRNAs,
+			                                sequenceFormat = 2,
+			                                verbose = FALSE), target);
 
 		});
 

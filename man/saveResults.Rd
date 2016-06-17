@@ -30,6 +30,10 @@ saveResults(this, df, outputFilename, outputPath, sep = "\\t",
 \item{...}{Arguments that can be passed on to \code{write.table}}
 }
 \description{
+This function saves the data frame returned from
+translateMiRNAName inclusive the attribute 'description'.
+Save miRNA translation results
+
 This function saves the data frame returned from translateMiRNAName
 inclusive the attribute 'description'.
 }

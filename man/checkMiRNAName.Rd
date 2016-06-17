@@ -6,18 +6,14 @@
 \alias{checkMiRNAName,MiRNANameConverter-method}
 \title{Check miRNA names for validity}
 \usage{
-checkMiRNAName(this, miRNAs, correct = TRUE, verbose = FALSE)
+checkMiRNAName(this, miRNAs, verbose = FALSE)
 
-\S4method{checkMiRNAName}{MiRNANameConverter}(this, miRNAs, correct = TRUE,
-  verbose = FALSE)
+\S4method{checkMiRNAName}{MiRNANameConverter}(this, miRNAs, verbose = FALSE)
 }
 \arguments{
 \item{this}{Object of class 'MiRNANameConverter'}
 
 \item{miRNAs}{A character vector of miRNA names}
-
-\item{correct}{A boolean indicating if formatted miRNA names shall be
-returned (e.g. HSA-MIR-1 -> hsa-miR-1)}
 
 \item{verbose}{A boolean to either show more (TRUE) or less
 information (FALSE)}
@@ -26,6 +22,9 @@ information (FALSE)}
 A character vector containing a set of valid miRNA names
 }
 \description{
+This function checks for a given set of mature 'miRNAs' (names)
+Check miRNA names for validity
+
 This function checks for a given set of mature 'miRNAs' (names)
 if the names are listed in any miRBase version respectively.
 }

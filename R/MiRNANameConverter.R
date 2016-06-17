@@ -1,4 +1,6 @@
-
+#' @title MiRNANameConverter constructor
+#'
+#' @description This function returns an instance of a MiRNANAmeConverter class.
 #' Handling mature miRNA names from different miRBase versions
 #' This package contains algorithms for dealing with mature miRNA names
 #' from different miRBase release versions. The functions are provided in form
@@ -38,7 +40,6 @@
 #' @author Stefan Haunsberger \email{stefanhaunsberger@rcsi.ie}
 #' @examples
 #' # Translate a mature miRNA name to miRBase version 21.0
-#' library(miRNAmeConverter)
 #' nc = MiRNANameConverter(); # Object instantiation
 #' translateMiRNAName(nc, "hsa-miR-29a", version = 21.0)
 #' @import DBI miRBaseVersions.db AnnotationDbi
@@ -104,11 +105,9 @@ setMethod(
       args = as.list(match.call());
 
       # Store database connection
-      # .dbconn(.Object) = dbconn(miRBaseVersions.db);
       .dbconn(.Object) = AnnotationDbi::dbconn(miRBaseVersions.db);
       con = .dbconn(.Object);
       # Recive all version numbers from the db
-      # .Object = .dbConnect(.Object);
       versions = (DBI::dbGetQuery(con,
                              "SELECT number AS version FROM version;"))$version;
       validVersions(.Object) = versions;
@@ -133,9 +132,9 @@ setMethod(
 #'
 .check = function(input) {
     # Correct 'mir-' with 'miR-'
-    output = gsub("mir-", "miR-", input, ignore.case = TRUE);
+    # output = gsub("mir-", "miR-", input, ignore.case = TRUE);
     # Remove quotations (single and double)
-    output = gsub("\"|\'", "", output);
+    output = gsub("\"|\'|--", "", input);
     return(output);
 }
 
@@ -164,6 +163,9 @@ setMethod(
 )
 
 ##### checkMiRNAName ####
+#' @title Check miRNA names for validity
+#'
+#' @description This function checks for a given set of mature 'miRNAs' (names)
 #' Check miRNA names for validity
 #'
 #' This function checks for a given set of mature 'miRNAs' (names)
@@ -178,8 +180,6 @@ setMethod(
 #'
 #' @param this Object of class 'MiRNANameConverter'
 #' @param miRNAs A character vector of miRNA names
-#' @param correct A boolean indicating if formatted miRNA names shall be
-#' returned (e.g. HSA-MIR-1 -> hsa-miR-1)
 #' @param verbose A boolean to either show more (TRUE) or less
 #' information (FALSE)
 #' @return A character vector containing a set of valid miRNA names
@@ -197,7 +197,6 @@ setGeneric(
    name = "checkMiRNAName",
    def = function(this,
                   miRNAs,
-                  correct = TRUE,
                   verbose = FALSE) {
       standardGeneric("checkMiRNAName");
    }
@@ -209,7 +208,6 @@ setMethod(
    signature("MiRNANameConverter"),
    definition = function(this,
                          miRNAs,
-                         correct,
                          verbose) {
 
       if (verbose) {
@@ -256,18 +254,23 @@ setMethod(
          printFunctionExitInformation(fun = as.character((match.call())));
       }
 
-      if (correct) {
-         return(miRNAs.valid);
-      } else {
+      # if (correct) {
+         # return(miRNAs.valid);
+#       } else {
          return(miRNAs.unique[(toupper(miRNAs.unique)
                                %in%
                                   toupper(miRNAs.valid))])
-      }
+#       }
    }
 )
 
 
 ##### assessMiRNASwappingMIMAT ####
+#' @title Check if given miRNA names can be assigned to unique MIMAT 
+#' accessions among all versions
+#'
+#' @description This function checks if the names from a given set of mature
+#' miRNAs have a unique MIMAT ID.
 #' Check if given miRNA names can be assigned to unique MIMAT accessions among
 #' all versions
 #'
@@ -301,8 +304,8 @@ setGeneric(
    }
 )
 
-#' @describeIn assessMiRNASwappingMIMAT Method for assessing miRNA names that
-#' swapped MIMAT-accession
+# @describeIn assessMiRNASwappingMIMAT Method for assessing miRNA names that
+# swapped MIMAT-accession
 setMethod(
    f = "assessMiRNASwappingMIMAT",
    signature("MiRNANameConverter"),
@@ -353,6 +356,10 @@ setMethod(
 
 
 ##### assessVersion ####
+#' @title Assess miRBase version
+#'
+#' @description This function detects the most likely miRBase version of a
+#' given miRNA set.
 #' Assess miRBase version
 #'
 #' This function detects the most likely miRBase version of a given miRNA set.
@@ -460,6 +467,10 @@ setMethod(
 )
 
 ##### translateMiRNAName ####
+#' @title Translate miRNA name
+#'
+#' @description This function translates input miRNA names to different 
+#' miRBase versions.
 #' Translate miRNA name
 #'
 #' This function translates input miRNA names to different miRBase versions.
@@ -467,8 +478,9 @@ setMethod(
 #' @param this Object of class 'MiRNANameConverter'
 #' @param miRNAs A character vector of miRNA names
 #' @param versions An integer or numerical vector containing the target versions
-#' @param current A boolean telling if also the current miRBase version shall
-#' be returned
+#' @param sequenceFormat Integer value indicating the return format for the
+#' data frame containing sequence information
+#' {1=only sequences, 2=miRNA name and sequence}
 #' @param verbose A boolean to either show more (TRUE) or less information
 #' (FALSE)
 #' @return A (n x m) data frame where n is the number of valid miRNAs and m the
@@ -476,25 +488,30 @@ setMethod(
 #' columns (minimum 3 columns, MIMAT-ID (accession), input miRNA name, current
 #' version)
 #' In addition an attribute 'description' is added to the data frame where to
-#' each miRNA
-#' some notes are added (for example why a certain miRNA is not in the output).
+#' each miRNA some notes are added (for example why a certain miRNA is not 
+#' in the output).
+#' Sequence information is attached as the attribute 'sequence'.
 #'
 #' @examples
 #' nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
-#' translateMiRNAName(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"),
+#' res = translateMiRNAName(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"),
 #'                    versions = c(15, 16, 20, 21))
+#' res
+#' attributes(res)
 #' @seealso \code{\link{attr}} for attributes
 #'
 #' @details
-#' This is done in 5 main steps:
+#' The translation and sequence retrieval are done in 5 main steps:
 #'		1) Only take miRNA names that do not swap MIMAT IDs among versions
 #'		(\code{\link{assessMiRNASwappingMIMAT}})
 #'		2) Check, if the miRNA names are valid names (\code{\link{checkMiRNAName}})
 #'		3) Receive unique MIMAT IDs for each valid miRNA
 #'			- If there are miRNAs that have basically the same name,
 #'			  only use miRNA names from the highest version
-#'		4) Check if the found MIMAT IDs are still listed in the current miRBase version
-#'			- If not, neglect it because then it is not considered to be a miRNA anymore
+#'		4) Check if the found MIMAT IDs are still listed in the 
+#'		    current miRBase version
+#'			- If not, neglect it because then it is not considered to be a 
+#'			    miRNA anymore
 #'		5) Receive names from desired versions
 #'
 #' @author Stefan Haunsberger
@@ -505,7 +522,7 @@ setGeneric(
    def = function(this,
                   miRNAs,
                   versions,
-                  current = FALSE,
+                  sequenceFormat = 1,                  
                   verbose = FALSE) {
       standardGeneric("translateMiRNAName");
    }
@@ -514,245 +531,315 @@ setGeneric(
 #' @describeIn translateMiRNAName Method for translating miRNA name(s) to
 #' different miRBase versions
 setMethod(
-   f = "translateMiRNAName",
-   signature(this = "MiRNANameConverter", miRNAs = "character"),
-   definition = function(this,
-                         miRNAs,
-                         versions,
-                         current,
-                         verbose) {
+    f = "translateMiRNAName",
+    signature(this = "MiRNANameConverter", miRNAs = "character"),
+    definition = function(this,
+                        miRNAs,
+                        versions,
+                        sequenceFormat,
+                        verbose) {
 
-      if (verbose) {
-         printFunctionEntryInformation(fun = as.character((match.call())),
+    if (verbose) {
+        printFunctionEntryInformation(fun = as.character((match.call())),
                                        match_call = match.call());
-      }
+    }
 
-      args = as.list(match.call());
+    args = as.list(match.call());
 
-      if (!is.null(args$miRNAs)) {
-         if (!(class(miRNAs) == "character")) {
+    if (!is.null(args$miRNAs)) {
+        if (!(class(miRNAs) == "character")) {
             stop(sprintf("Class of miRNAs ('%s') should be 'character'.\nPlease try again with a valid class.", class(miRNAs)));
-         }
-         # Substitute characters/clean
-         miRNAs = .check(miRNAs);
-         miRNAs.unique = unique(miRNAs);
-         if (length(miRNAs.unique) != length(miRNAs)) {
+        }
+        # Substitute characters/clean
+        miRNAs = .check(miRNAs);
+        miRNAs.unique = unique(miRNAs);
+        if (length(miRNAs.unique) != length(miRNAs)) {
             message(sprintf("\tInput: %i unique miRNA names",
-                            length(miRNAs.unique)));
-         }
-      }
+                                                    length(miRNAs.unique)));
+        }
+    }
 
-      if (is.null(args$versions)) {
-         versions = this@.currentVersion;
-      } else {
-         if (!all(versions %in% this@.validVersions)) {
+    if (is.null(args$versions)) {
+        versions = this@.currentVersion;
+    } else {
+        if (!all(versions %in% this@.validVersions)) {
             message(sprintf("Argument 'versions' is not valid."));
             message("Valid versions are:");
             message(sprintf("%2.1f", this@.validVersions));
             stop("Please try again with valid 'versions' argument.");
-         } else {
+        } else {
             versions = unique(versions);
-         }
-      }
+        }
+    }
 
-      # Initialize data frame with description to each miRNA
-      description = data.frame(input.miRNA = miRNAs.unique,
-                               information = "OK",
-                               stringsAsFactors = FALSE,
-                               row.names = miRNAs.unique);
-      # print(description)
+    # Initialize data frame with description to each miRNA
+    description = data.frame(input.miRNA = miRNAs.unique,
+                            information = "OK",
+                            stringsAsFactors = FALSE,
+                            row.names = miRNAs.unique);
 
-      ###### ### ###
-      # 1) Check for MIMAT swapping miRNAs
 
-      ## Only use miRNAs that are not swapping MIMATs as input
-      miRNAs.swapping = suppressMessages(
-                           assessMiRNASwappingMIMAT(this,
-                              miRNAs.unique, verbose = verbose));
-      miRNAs.not.swapping = miRNAs.unique[!(miRNAs.unique %in% miRNAs.swapping)];
-
-      if (length(miRNAs.swapping) > 0) {
-         if (length(miRNAs.swapping) == 1) {
+    ###### ### ###
+    # 1) Check for MIMAT swapping miRNAs
+    
+    ## Only use miRNAs that are not swapping MIMATs as input
+    miRNAs.swapping = suppressMessages(
+                        assessMiRNASwappingMIMAT(
+                            this,
+                            miRNAs.unique, verbose = verbose
+                            )
+                        );
+    miRNAs.not.swapping = miRNAs.unique[!(miRNAs.unique %in% miRNAs.swapping)];
+    
+    if (length(miRNAs.swapping) > 0) {
+        if (length(miRNAs.swapping) == 1) {
             message("\tFollowing miRNA will be neglected due to non unique MIMAT accession:");
-         } else {
+        } else {
             message("\tFollowing miRNAs will be neglected due to non unique MIMAT accession:");
-         }
-         message(paste0(miRNAs.swapping, collapse = "; "));
-      }
+        }
+        message(paste0(miRNAs.swapping, collapse = "; "));
+    }
 
-      description[miRNAs.swapping, "information"] = "This miRNA does not have a unique MIMAT ID.";
-
-      if (length(miRNAs.not.swapping) == 0) {
-         message("No further miRNAs to process, return NULL.");
-         return(NULL);
-      }
-      ###### ### ###
-      # 2) Check which entries are acutally miRNAs listed in the miRBase repository
-
-      ## Only process miRNAs that are valid miRNA names
-      miRNAs.valid = suppressMessages(checkMiRNAName(this,
-                                                     miRNAs.not.swapping,
-                                                     correct = TRUE,
-                                                     verbose = verbose));
-      miRNAs.not.valid = miRNAs.not.swapping[!(toupper(miRNAs.not.swapping) %in% toupper(miRNAs.valid))];
-      n.miRNAs.valid = length(miRNAs.valid);
-      n.miRNAs.dif = length(miRNAs.not.swapping) - n.miRNAs.valid;
-      
-      # print(miRNAs.valid)
-
-      if (length(miRNAs.valid) == 0) {
-         message("No valid miRNAs found.");
-         return(NULL);
-      }
-
-      if (n.miRNAs.dif != 0) {
-         if (n.miRNAs.dif == 1) {
+    description[miRNAs.swapping, "information"] = "This miRNA does not have a unique MIMAT ID.";
+    
+    if (length(miRNAs.not.swapping) == 0) {
+        message("No further miRNAs to process, return NULL.");
+        return(NULL);
+    }
+    ###### ### ###
+    # 2) Check which entries are acutally miRNAs listed in the miRBase repository
+    
+    ## Only process miRNAs that are valid miRNA names
+    miRNAs.valid = suppressMessages(checkMiRNAName(this,
+                                                 miRNAs.not.swapping,
+                                                 verbose = verbose));
+    miRNAs.not.valid = miRNAs.not.swapping[!(toupper(miRNAs.not.swapping) 
+                                                %in% toupper(miRNAs.valid))];
+    n.miRNAs.valid = length(miRNAs.valid);
+    n.miRNAs.dif = length(miRNAs.not.swapping) - n.miRNAs.valid;
+    
+    # print(miRNAs.valid)
+    miRNAs.valid = suppressMessages(
+                        checkMiRNAName(
+                            this
+                            ,miRNAs.not.swapping
+                            ,verbose = verbose
+                        )
+                    );
+    miRNAs.not.valid = miRNAs.not.swapping[!(toupper(miRNAs.not.swapping) 
+                                                %in% toupper(miRNAs.valid))];
+    n.miRNAs.valid = length(miRNAs.valid);
+    n.miRNAs.dif = length(miRNAs.not.swapping) - n.miRNAs.valid;
+    
+    if (length(miRNAs.valid) == 0) {
+        message("No valid miRNAs found.");
+        return(NULL);
+    }
+    
+    if (n.miRNAs.dif != 0) {
+        if (n.miRNAs.dif == 1) {
             message("\tFollowing miRNA will be neglected (not listed in miRBase):");
-         } else {
+        } else {
             message("\tFollowing miRNAs will be neglected (not listed in miRBase):");
-         }
-         message(paste0(miRNAs.not.valid, collapse = "; "));
-      }
+        }
+        message(paste0(miRNAs.not.valid, collapse = "; "));
+    }
+    
+    description[miRNAs.not.valid, "information"] =
+                          "This name is not listed in any miRBase version.";
 
-      description[miRNAs.not.valid, "information"] =
-                              "This name is not listed in any miRBase version.";
-
-      ###### ### ###
-      # 3) Check if there are miRNAs that have the same name -> same MIMAT
-      ##								name		accession	version
-      ##		e.g.:	2  hsa-let-7a*		MIMAT0004481	17
-      ##				3 	hsa-let-7a-3p 	MIMAT0004481	21		--> would be chosen
-      ## They are basically the same but input names are from different versions
-
-      ## Receive unique MIMAT accessions for each miRNA name with the
-      ## maximum version number
-      mimats.versions = DBI::dbGetQuery(conn = .dbconn(this),
-                                   sprintf("SELECT DISTINCT accession, name, MAX(version) as version FROM mimat
-                                            WHERE UPPER(name) IN (\"%s\")
-                                            GROUP BY accession, name
-                                            ORDER BY accession",
-                                           paste(toupper(miRNAs.valid), collapse = "\", \"")));
-      if (length(miRNAs.valid) == 1) {
-         mimats = mimats.versions$accession;
-         names = mimats.versions$name;
-      } else {
-         mimats.versions.split = split(mimats.versions,
-                                       mimats.versions$accession);
-         mimats = character(length(unique(mimats.versions$accession)));
-         names = character(length(unique(mimats.versions$accession)));
+    ###### ### ###
+    # 3) Check if there are miRNAs that have the same name -> same MIMAT
+    ##								name		accession	version
+    ##		e.g.:	2  hsa-let-7a*		MIMAT0004481	17
+    ##				3 	hsa-let-7a-3p 	MIMAT0004481	21		--> would be chosen
+    ## They are basically the same but input names are from different versions
+    
+    ## Receive unique MIMAT accessions for each miRNA name with the
+    ## maximum version number
+    mimats.versions = DBI::dbGetQuery(
+                            conn = .dbconn(this)
+                            ,sprintf("SELECT DISTINCT accession, name, 
+                                        MAX(version) as version FROM mimat
+                                        WHERE UPPER(name) IN (\"%s\")
+                                        GROUP BY accession, name
+                                        ORDER BY accession",
+                                        paste(toupper(miRNAs.valid), 
+                                                        collapse = "\", \"")
+                                     )
+                            );
+    if (length(miRNAs.valid) == 1) {
+        mimats = mimats.versions$accession;
+        names = mimats.versions$name;
+    } else {
+        mimats.versions.split = split(mimats.versions,
+                                    mimats.versions$accession);
+        mimats = character(length(unique(mimats.versions$accession)));
+        names = character(length(unique(mimats.versions$accession)));
          for (i in 1:length(mimats.versions.split)) {
             idx = 1;
             if (nrow(mimats.versions.split[[i]]) > 1) {
-               # Take the name from the highest version
-               idx = which.max((mimats.versions.split[[i]])$version);
-               name = mimats.versions.split[[i]]$name[idx];
-               name.other = mimats.versions.split[[i]]$name[-idx];
-               writeLines(sprintf("\tmiRNA '%s' is the same as '%s'.",
+                # Take the name from the highest version
+                idx = which.max((mimats.versions.split[[i]])$version);
+                name = mimats.versions.split[[i]]$name[idx];
+                name.other = mimats.versions.split[[i]]$name[-idx];
+                writeLines(sprintf("\tmiRNA '%s' is the same as '%s'.",
                                   name, paste(name.other, collapse = ", ")));
-               writeLines(sprintf("\t->%s is the most recent one and will be used. The other ones will be neglected.", name));
-               # Add description to miRNAs that will be neglected
-               description[name.other, "information"] =
-                  sprintf("This miRNA is the same as input miRNA name '%s' from version %2.1f.",
-                              name, (mimats.versions.split[[i]])$version[idx]);
+                writeLines(sprintf("\t->%s is the most recent one and will be used. The other ones will be neglected.", name));
+                # Add description to miRNAs that will be neglected
+                description[name.other, "information"] =
+                    sprintf("This miRNA is the same as input miRNA name '%s' from version %2.1f.",
+                            name, (mimats.versions.split[[i]])$version[idx]);
             }
             mimats[i] = mimats.versions.split[[i]]$accession[idx];
             names[i] = mimats.versions.split[[i]]$name[idx];
-         }
-      }
-
-      ###### ### ###
-      # 4) Check which MIMATs are listed in the current miRBase release
-
-      ## Only take miRNAs that are listed in the current version
-      ### Receive mimats that are listed in the current version
-      mimats.current = (DBI::dbGetQuery(conn = .dbconn(this),
-                                 sprintf("SELECT accession FROM 'vw-mimat-%2.1f'
-                                          WHERE accession IN (\"%s\")",
-                                    this@.currentVersion, paste(toupper(mimats),
-                                             collapse = "\", \""))))$accession;
-      mimats.invalid = mimats[!(mimats %in% mimats.current)];
-      names.invalid = names[!(mimats %in% mimats.current)];
-      if (length(mimats.invalid) > 0) {
-         if (length(mimats.invalid) == 1) {
+        }
+    }
+    
+    ###### ### ###
+    # 4) Check which MIMATs are listed in the current miRBase release
+    
+    ## Only take miRNAs that are listed in the current version
+    ### Receive mimats that are listed in the current version
+    mimats.current = (DBI::dbGetQuery(conn = .dbconn(this),
+                             sprintf("SELECT accession FROM 'vw-mimat-%2.1f'
+                                      WHERE accession IN (\"%s\")",
+                                this@.currentVersion, paste(toupper(mimats),
+                                         collapse = "\", \""))))$accession;
+    mimats.invalid = mimats[!(mimats %in% mimats.current)];
+    names.invalid = names[!(mimats %in% mimats.current)];
+    if (length(mimats.invalid) > 0) {
+        if (length(mimats.invalid) == 1) {
             message(sprintf("\tFollowing miRNA is not listed in the current miRBase version %2.1f.",
-                            this@.currentVersion));
-         } else {
+                        this@.currentVersion));
+        } else {
             message(sprintf("\tFollowing miRNAs are not listed in the current miRBase version %2.1f.",
-                            this@.currentVersion));
-         }
-         message(paste0(names.invalid, collapse = "; "));
-      }
-      ### Exclude MIMATs that are not listed in the current version
-      mimats.valid = mimats[mimats %in% mimats.current];
-      names.valid = names[mimats %in% mimats.current];
+                        this@.currentVersion));
+        }
+        message(paste0(names.invalid, collapse = "; "));
+    }
+    ### Exclude MIMATs that are not listed in the current version
+    mimats.valid = mimats[mimats %in% mimats.current];
+    names.valid = names[mimats %in% mimats.current];
+    
+    description[names.invalid, "information"] =
+        sprintf("This miRNA is not listed in the current miRBase version %2.1f.",
+                                                      this@.currentVersion);
 
-      description[names.invalid, "information"] =
-       sprintf("This miRNA is not listed in the current miRBase version %2.1f.",
-                                                          this@.currentVersion);
+    ###### ### ###
+    # 5) Translate miRNA names to desired versions
+    
+    ## Initialize return data frame for miRNA names and sequences
+    ### miRNA names
+    ## Initialize return data frame
+    n.col = 2 + length(versions);
+    headers = c("mimat", "input",
+        paste0("v", sprintf("%2.1f",versions)));
+    df = as.data.frame(matrix(data = NA_character_, nrow =
+                               length(mimats.valid), ncol = n.col));
+    colnames(df) = headers;
+    ### Sequences
+    if (sequenceFormat == 1) {
+        dfSeq = as.data.frame(matrix(data = NA_character_,
+                                     nrow = length(mimats.valid),
+                                                    ncol = n.col),
+                            stringsAsFactors = FALSE);
+        colnames(dfSeq) = c("mimat", "input", 
+                            paste0("v", sprintf("%2.1f",versions)));
+    
+    } else {
+        dfSeq = as.data.frame(matrix(data = NA_character_,
+                                   nrow = length(mimats.valid),
+                                   ncol = 2 + 2 * length(versions)),
+                                stringsAsFactors = FALSE);
+        
+        nam = unlist(
+                lapply(paste0("v", sprintf("%2.1f",versions)), 
+                    function(y1) {
+                        lapply(c("miRNA", "Sequence"),
+                                function(y2) {
+                                    paste(y1, y2, sep="-")
+                        })}));
+        colnames(dfSeq) = c("mimat", "input", nam);
+        rm(nam);
+    }
+    # Convert factor columns to character columns
+    fac.cols = sapply(df, is.factor);
+    df[, fac.cols] = sapply(df[, fac.cols], as.character);
+    # colnames(df) = headers;
+    fac.cols = sapply(dfSeq, is.factor);
+    dfSeq[, fac.cols] = sapply(dfSeq[, fac.cols], as.character);
+    # colnames(dfSeq) = headers;
+    
+    df$mimat = mimats.valid;
+    df$input = names.valid;
+    dfSeq$mimat = mimats.valid;
+    dfSeq$input = names.valid;
+    rownames(df) = mimats.valid;
+    rownames(dfSeq) = mimats.valid;
+    
+    ## Iterate over desired versions and
+    for (version in versions) {
+    
+        miRNAs.version =
+        DBI::dbGetQuery(conn = .dbconn(this),
+                     sprintf("SELECT accession, name FROM 'vw-mimat-%2.1f'
+                              WHERE accession IN (\"%s\")",
+                             version, paste(toupper(df$mimat),
+                                            collapse = "\", \"")));
+        df[miRNAs.version$accession, 
+                          sprintf("v%2.1f",version)] = miRNAs.version$name;
+        
+        # sequences
+        if (sequenceFormat == 1) {
+            # Only accession and sequence
+            seq.version = DBI::dbGetQuery(conn = .dbconn(this),
+                             sprintf("SELECT accession, sequence
+                                FROM 'vw-mimat-%2.1f'
+                                WHERE accession IN (\"%s\")",
+                                     version, paste(toupper(df$mimat),
+                                                    collapse = "\", \"")));
+            dfSeq[seq.version$accession, 
+                sprintf("v%2.1f",version)] = seq.version$sequence;
+        } else {
+            # Accession, miRNA name and sequence
+            seq.version = DBI::dbGetQuery(conn = .dbconn(this),
+                             sprintf("SELECT accession, name, sequence
+                                FROM 'vw-mimat-%2.1f'
+                                WHERE accession IN (\"%s\")",
+                                     version, paste(toupper(df$mimat),
+                                                    collapse = "\", \"")));
+            dfSeq[seq.version$accession,
+                sprintf("v%2.1f-Sequence",version)] = seq.version$sequence;
+            dfSeq[miRNAs.version$accession, 
+                    sprintf("v%2.1f-miRNA",version)] = miRNAs.version$name;
+        }
 
-      ###### ### ###
-      # 5) Translate miRNA names to desired versions
+    }
 
-      ## Initialize return data frame
-      if (current) {
-         n.col = 3 + length(versions);
-         headers = c("mimat", "input", "current",
-                     paste0("v", sprintf("%2.1f",versions)));
-      } else {
-         n.col = 2 + length(versions);
-         headers = c("mimat", "input",
-                     paste0("v", sprintf("%2.1f",versions)));
-      }
-      df = as.data.frame(matrix(data = NA_character_, nrow =
-                                   length(mimats.valid), ncol = n.col));
-      fac.cols = sapply(df, is.factor);
-      df[, fac.cols] = sapply(df[, fac.cols], as.character);
-      colnames(df) = headers;
-
-      df$mimat = mimats.valid;
-      df$input = names.valid;
-      rownames(df) = mimats.valid;
-      ## Iterate over desired versions and
-      for (version in versions) {
-         miRNAs.version =
-            DBI::dbGetQuery(conn = .dbconn(this),
-                         sprintf("SELECT accession, name FROM 'vw-mimat-%2.1f'
-                                  WHERE accession IN (\"%s\")",
-                                 version, paste(toupper(df$mimat),
-                                                collapse = "\", \"")));
-         df[miRNAs.version$accession, paste0("v",
-                              sprintf("%2.1f",version))] = miRNAs.version$name;
-
-      }
-
-      if (current) {
-         miRNAs.current =
-            DBI::dbGetQuery(conn = .dbconn(this),
-                   sprintf("SELECT accession, name FROM 'vw-mimat-%2.1f'
-                            WHERE accession IN (\"%s\")",
-                           this@.currentVersion, paste(toupper(df$mimat),
-                                                        collapse = "\", \"")));
-         df[miRNAs.current$accession, "current"] = miRNAs.current$name;
-      }
-
-      # Reorder data frames
-      ##	df by MIMAT ID
-      ## description by input miRNA names
-      df = df[order(df$mimat),];
-      description = description[order(description$input.miRNA),];
-
-      # Add description as an attribute
-      attr(df, "description") = description;
-
-      if (verbose) {
-         printFunctionExitInformation(fun = as.character((match.call())));
-      }
-
-      return(df);
-   }
-)
+    # Reorder data frames
+    ##	df by MIMAT ID
+    ## description by input miRNA names
+    df = df[order(df$mimat),];
+    dfSeq = dfSeq[order(dfSeq$mimat),];
+    description = description[order(description$input.miRNA),];
+    
+    # Add description as an attribute
+    attr(df, "description") = description;
+    attr(df, "sequence") = dfSeq;
+    
+    if (verbose) {
+        printFunctionExitInformation(fun = as.character((match.call())));
+    }
+    
+    return(df);
+})
 
 ##### saveResults ####
+#' @title Save miRNA translation results
+#'
+#' @description This function saves the data frame returned from
+#' translateMiRNAName inclusive the attribute 'description'.
 #' Save miRNA translation results
 #'
 #' This function saves the data frame returned from translateMiRNAName
@@ -800,82 +887,98 @@ setGeneric(
 
 #' @describeIn saveResults Method for saving translation results
 setMethod(
-   f = "saveResults",
-   signature(this = "MiRNANameConverter", df = "data.frame"),
-   definition = function(this,
-                         df,
-                         outputFilename,
-                         outputPath,
-                         sep,
-                         quote,
-                         verbose,
-                         ...) {
+    f = "saveResults",
+    signature(this = "MiRNANameConverter", df = "data.frame"),
+    definition = function(this,
+                            df,
+                            outputFilename,
+                            outputPath,
+                            sep,
+                            quote,
+                            verbose,
+                            ...) {
 
-      if (verbose) {
-         printFunctionEntryInformation(fun = as.character((match.call())),
-                                       match_call = match.call());
-      }
-
-      args = as.list(match.call());
-
-      if (is.null(args$outputFilename)) {
-         time = format(Sys.time(), "%H%M%S");
-         date = format(Sys.Date(), "%d%m%Y");
-         outputFilename = sprintf("miRNA-name-translation-%s-%s.txt",
-                                   date, time);
-      }
-
-      if (is.null(args$outputPath)) {
-         outputPath = ".";
-      } else {
-         if (!file.exists(outputPath)) {
+    if (verbose) {
+        printFunctionEntryInformation(fun = as.character((match.call())),
+                           match_call = match.call());
+    }
+    
+    args = as.list(match.call());
+    
+    if (is.null(args$outputFilename)) {
+        time = format(Sys.time(), "%H%M%S");
+        date = format(Sys.Date(), "%d%m%Y");
+        outputFilename = sprintf("miRNA-name-translation-%s-%s.txt",
+                               date, time);
+    }
+    
+    if (is.null(args$outputPath)) {
+        outputPath = ".";
+    } else {
+        if (!file.exists(outputPath)) {
             message(sprintf("Given outputPath '%s' does not exist.",
                             outputPath));
             stop("Please try again with valid output path.");
-         }
-      }
-
-      # Construct 'file' (path incl. filename, such as <path>/filename.txt)
-      output.file = file.path(outputPath, outputFilename);
-      if (file.exists(output.file)) {
-         prefix = substr(outputFilename, 1,
-                         sapply(gregexpr("\\.", outputFilename), tail, 1) - 1);
-         suffix = substr(outputFilename,
-                         sapply(gregexpr("\\.", outputFilename), tail, 1),
-                                 nchar(outputFilename));
-         time = gsub(pattern = ":", replacement = "", x = (format(Sys.time(), "%X")));
-         date = format(Sys.Date(), "%d-%m-%Y");
-         outputFilename = sprintf("%s-%s-%s%s", prefix, date, time, suffix);
-         message(sprintf("Output file already exists -> Save file under name '%s'", outputFilename));
-         output.file = file.path(outputPath, outputFilename);
-      }
-
-      writeLines(sprintf("\tSave file to '%s'...", output.file));
-      utils::write.table(df, file = output.file, row.names = FALSE, quote = FALSE, sep = sep);
-
-      if (!is.null(attributes(df)$description)) {
-         prefix = substr(outputFilename, 1,
-                         sapply(gregexpr("\\.", outputFilename), tail, 1) - 1);
-         suffix = substr(outputFilename,
-                         sapply(gregexpr("\\.", outputFilename), tail, 1),
-                                 nchar(outputFilename));
-         outputFilename = sprintf("%s-description%s", prefix, suffix);
-         output.file = file.path(outputPath, outputFilename);
-         writeLines(sprintf("\tSave file to '%s'...", output.file));
-         utils::write.table(attributes(df)$description, file = output.file,
-                     row.names = FALSE, quote = FALSE, sep = sep);
-      }
-
-      if (verbose) {
-         printFunctionExitInformation(fun = as.character((match.call())));
-      }
-
-      invisible(return);
-   }
-)
+        }
+    }
+    
+    # Construct 'file' (path incl. filename, such as <path>/filename.txt)
+    output.file = file.path(outputPath, outputFilename);
+    if (file.exists(output.file)) {
+        prefix = substr(outputFilename, 1,
+                     sapply(gregexpr("\\.", outputFilename), tail, 1) - 1);
+        suffix = substr(outputFilename,
+                     sapply(gregexpr("\\.", outputFilename), tail, 1),
+                             nchar(outputFilename));
+        time = gsub(pattern = ":", replacement = "", x = (format(Sys.time(), "%X")));
+        date = format(Sys.Date(), "%d-%m-%Y");
+        outputFilename = sprintf("%s-%s-%s%s", prefix, date, time, suffix);
+        message(sprintf("Output file already exists -> Save file under name '%s'", outputFilename));
+        output.file = file.path(outputPath, outputFilename);
+    }
+    
+    writeLines(sprintf("\tSave file to '%s'...", output.file));
+    utils::write.table(df, file = output.file, row.names = FALSE, quote = FALSE, sep = sep);
+    
+    # description
+    if (!is.null(attributes(df)$description)) {
+        prefix = substr(outputFilename, 1,
+                     sapply(gregexpr("\\.", outputFilename), tail, 1) - 1);
+        suffix = substr(outputFilename,
+                     sapply(gregexpr("\\.", outputFilename), tail, 1),
+                             nchar(outputFilename));
+        outputFilenameDesc = sprintf("%s-description%s", prefix, suffix);
+        output.file = file.path(outputPath, outputFilenameDesc);
+        writeLines(sprintf("\tSave file to '%s'...", output.file));
+        utils::write.table(attributes(df)$description, file = output.file,
+                 row.names = FALSE, quote = FALSE, sep = sep);
+    }
+    
+    if (!is.null(attributes(df)$sequence)) {
+        prefix = substr(outputFilename, 1,
+                      sapply(gregexpr("\\.", outputFilename), tail, 1) - 1);
+        suffix = substr(outputFilename,
+                      sapply(gregexpr("\\.", outputFilename), tail, 1),
+                      nchar(outputFilename));
+        outputFilenameSeq = sprintf("%s-sequence%s", prefix, suffix);
+        output.file = file.path(outputPath, outputFilenameSeq);
+        writeLines(sprintf("\tSave file to '%s'...", output.file));
+        utils::write.table(attributes(df)$sequence, file = output.file,
+                         row.names = FALSE, quote = FALSE, sep = sep);
+    }
+    
+    if (verbose) {
+        printFunctionExitInformation(fun = as.character((match.call())));
+    }
+    
+    invisible(return);
+})
 
 
 ##### show ####
+#' @title Show-method
+#'
+#' @description This function prints object specific information
 #' Show-method
 #'
 #' This function prints object specific information

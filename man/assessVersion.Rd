@@ -25,6 +25,10 @@ order by frequency, version)
 				to the version respectively
 }
 \description{
+This function detects the most likely miRBase version of a
+given miRNA set.
+Assess miRBase version
+
 This function detects the most likely miRBase version of a given miRNA set.
 }
 \details{

@@ -12,6 +12,9 @@
 }
 \description{
 This function prints object specific information
+Show-method
+
+This function prints object specific information
 }
 \details{
 This function prints some information to the console.

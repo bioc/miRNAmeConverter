@@ -6,10 +6,11 @@
 \alias{translateMiRNAName,MiRNANameConverter,character-method}
 \title{Translate miRNA name}
 \usage{
-translateMiRNAName(this, miRNAs, versions, current = FALSE, verbose = FALSE)
+translateMiRNAName(this, miRNAs, versions, sequenceFormat = 1,
+  verbose = FALSE)
 
 \S4method{translateMiRNAName}{MiRNANameConverter,character}(this, miRNAs,
-  versions, current = FALSE, verbose = FALSE)
+  versions, sequenceFormat = 1, verbose = FALSE)
 }
 \arguments{
 \item{this}{Object of class 'MiRNANameConverter'}
@@ -18,8 +19,9 @@ translateMiRNAName(this, miRNAs, versions, current = FALSE, verbose = FALSE)
 
 \item{versions}{An integer or numerical vector containing the target versions}
 
-\item{current}{A boolean telling if also the current miRBase version shall
-be returned}
+\item{sequenceFormat}{Integer value indicating the return format for the
+data frame containing sequence information
+{1=only sequences, 2=miRNA name and sequence}}
 
 \item{verbose}{A boolean to either show more (TRUE) or less information
 (FALSE)}
@@ -30,22 +32,29 @@ number of
 columns (minimum 3 columns, MIMAT-ID (accession), input miRNA name, current
 version)
 In addition an attribute 'description' is added to the data frame where to
-each miRNA
-some notes are added (for example why a certain miRNA is not in the output).
+each miRNA some notes are added (for example why a certain miRNA is not 
+in the output).
+Sequence information is attached as the attribute 'sequence'.
 }
 \description{
+This function translates input miRNA names to different 
+miRBase versions.
+Translate miRNA name
+
 This function translates input miRNA names to different miRBase versions.
 }
 \details{
-This is done in 5 main steps:
+The translation and sequence retrieval are done in 5 main steps:
 	1) Only take miRNA names that do not swap MIMAT IDs among versions
 	(\code{\link{assessMiRNASwappingMIMAT}})
 	2) Check, if the miRNA names are valid names (\code{\link{checkMiRNAName}})
 	3) Receive unique MIMAT IDs for each valid miRNA
 		- If there are miRNAs that have basically the same name,
 		  only use miRNA names from the highest version
-	4) Check if the found MIMAT IDs are still listed in the current miRBase version
-		- If not, neglect it because then it is not considered to be a miRNA anymore
+	4) Check if the found MIMAT IDs are still listed in the 
+	    current miRBase version
+		- If not, neglect it because then it is not considered to be a 
+		    miRNA anymore
 	5) Receive names from desired versions
 }
 \section{Methods (by class)}{
@@ -55,8 +64,10 @@ different miRBase versions
 }}
 \examples{
 nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
-translateMiRNAName(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"),
+res = translateMiRNAName(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"),
                    versions = c(15, 16, 20, 21))
+res
+attributes(res)
 }
 \author{
 Stefan Haunsberger

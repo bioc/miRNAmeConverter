@@ -4,15 +4,9 @@
 \name{miRNAmeConverter}
 \alias{miRNAmeConverter}
 \alias{miRNAmeConverter-package}
-\title{Handling mature miRNA names from different miRBase versions
-This package contains algorithms for dealing with mature miRNA names
-from different miRBase release versions. The functions are provided in form
-of methods as part of the \code{MiRNANameConverter}-class. The data of all
-the miRBase release versions is stored in the \code{miRBaseVersions.db}
-annotation package.
-The \emph{MiRNAmeConverter} package contains one class that has two
-categories of functions: getters-functions and algorithms.}
+\title{MiRNANameConverter constructor}
 \description{
+This function returns an instance of a MiRNANAmeConverter class.
 Handling mature miRNA names from different miRBase versions
 This package contains algorithms for dealing with mature miRNA names
 from different miRBase release versions. The functions are provided in form
@@ -50,7 +44,6 @@ miRBase releases, the \code{\link{assessVersion}},
 }
 \examples{
 # Translate a mature miRNA name to miRBase version 21.0
-library(miRNAmeConverter)
 nc = MiRNANameConverter(); # Object instantiation
 translateMiRNAName(nc, "hsa-miR-29a", version = 21.0)
 }
