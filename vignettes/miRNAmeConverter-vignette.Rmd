@@ -62,8 +62,6 @@ In addition we have developed a web interface that enables one to use the
 `translateMiRNAName` function via web interface and is based on shiny 
 ([miRNAmeConverter-web](http://neuromir.eu/tools-for-research/mirnameconverter/)).
 
-The application runs on port 3838, so if the application does not show up
-please make sure your device is able to connect through port 3838.
   
 ## 1. Introduction
 
