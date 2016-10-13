@@ -1,29 +1,39 @@
-CHANGES IN VERSION 1.1.3:
-
-SIGNIFICANT USER-VISIBLE CHANGES
-
-    o Removed parameter 'correct' from 'checkMiRNAName' function.
+CHANGES IN VERSION 1.1.5
+------------------------
 
 NEW FEATURES
 
     o Added new attribute 'sequence', which is attached to the result data
-    frame of the 'translateMiRNAName'-function.
+      frame of the 'translateMiRNAName'-function.
 
-BUG FIXES
+SIGNIFICANT USER-LEVEL CHANGES
 
-    o 
-    
-CHANGES IN VERSION 1.0.2:
+    o Removed parameter 'correct' from 'checkMiRNAName' function.
+    o Updated citation
+    o Updated vignette
 
-SIGNIFICANT USER-VISIBLE CHANGES
+DEPRECATED AND DEFUNCT
 
-    o 
+    o
+
+CHANGES IN VERSION 1.0.2
+------------------------
 
 NEW FEATURES
 
     o 
 
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o
+    o
+    o
+
+DEPRECATED AND DEFUNCT
+
+    o
+
 BUG FIXES
 
-    o Fixed bug regarding filter that neglected 'let' miRNAs, such 
+    o Fixed bug regarding filter that neglected 'let' miRNAs, such
     as 'hsa-let-7a'.

@@ -92,6 +92,14 @@ miRNAmeConverter package just run the following command:
 library(miRNAmeConverter)
 ```
 
+#### Citing miRNAmeConverter
+To give the authors professional credit for their work, please try to cite the
+publication when you use results from the miRNAmeConverter:
+
+```{r highlight = TRUE}
+citation("miRNAmeConverter")
+```
+
 #### Vignette Info
 
 This vignette has been generated using an R Markdown file with 
@@ -229,14 +237,14 @@ named `"hsa-miR-378"` which in the current version 21.0 runs under the name
 Another example with more diverse input names is shown below, with the 
 respective console output and the entry in the attribute `description`.
 ```{r highlight = TRUE}
-miRNAs = c("hsa-miR-128b", "ebv-miR-BART3-5p", "mmu-miR-302b*", 
+miRNAs = c("hsa-miR-128b", "hsa-miR-213", "mmu-miR-302b*", 
            "mmu-miR-872", "ebv-miR-BART5", "bpcv1-miR-B23");
 nc = MiRNANameConverter();              # Create MiRNANameConverter object
 result = translateMiRNAName(            # Translate names
                             nc
                             ,miRNAs
                             ,sequenceFormat = 1
-                            ,versions = c(17, 19, 21)
+                            ,versions = c(8, 8.1, 18, 21)
                             );        
 ```
 
