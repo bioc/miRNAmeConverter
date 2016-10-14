@@ -94,7 +94,7 @@ library(miRNAmeConverter)
 
 #### Citing miRNAmeConverter
 To give the authors professional credit for their work, please try to cite the
-publication when you use results from the miRNAmeConverter:
+publication when you use the miRNAmeConverter:
 
 ```{r highlight = TRUE}
 citation("miRNAmeConverter")
