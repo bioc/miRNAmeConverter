@@ -60,7 +60,7 @@ challenges of mature miRNAs.
 
 In addition we have developed a web interface that enables one to use the 
 `translateMiRNAName` function via web interface and is based on shiny 
-([miRNAmeConverter-web](http://neuromir.eu/tools-for-research/mirnameconverter/)).
+([miRNAmeConverter-web](http://www.systemsmedicineireland.ie/tools/mirna-name-converter/)).
 
   
 ## 1. Introduction
