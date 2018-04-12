@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.Rmd*
+.Rbuildignore
+*.Rproj
+..Rcheck/
+inst/doc
+man/
+vignettes/*.txt
+
+.svn*
+.svn/

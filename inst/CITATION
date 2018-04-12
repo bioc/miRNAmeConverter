@@ -1,0 +1,13 @@
+citEntry(
+    entry="article",
+	author = c(person(c("Stefan","J"),"Haunsberger"),
+	           person(c("Niamh", "M", "C"), "Connolly"),
+	           person(c("Jochen","H", "M"),"Prehn")),
+	title = "{miRNAmeConverter}: an R/Bioconductor package for translating mature miRNA names to different miRBase versions",
+	journal = "Bioinformatics",
+	year = "in press",
+
+	textVersion =
+	"Haunsberger, S.J., Connolly N.M.C., Prehn, J.H.M. (in press). miRNAmeConverter: an R/Bioconductor package for translating mature miRNA names to different miRBase versions. Bioinformatics."
+)
+citHeader("Please cite the paper below for the miRNAmeConverter software itself. Please also try to cite the miRBase database.")
