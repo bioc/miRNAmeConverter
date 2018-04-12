@@ -1,0 +1,15 @@
+citEntry(
+    entry="article",
+	author = c(person(c("Stefan","J"),"Haunsberger"),
+	           person(c("Niamh", "M", "C"), "Connolly"),
+	           person(c("Jochen","H", "M"),"Prehn")),
+	title = "{miRNAmeConverter}: an R/Bioconductor package for translating mature miRNA names to different miRBase versions",
+	journal = "Bioinformatics",
+	year = "2016",
+	doi = "10.1093/bioinformatics/btw660",
+	url = "https://doi.org/10.1093/bioinformatics/btw660",
+
+	textVersion =
+	"Haunsberger, S.J., Connolly N.M.C., Prehn, J.H.M., (2016). miRNAmeConverter: an R/Bioconductor package for translating mature miRNA names to different miRBase versions. Bioinformatics. doi: 10.1093/bioinformatics/btw660"
+)
+citHeader("Please cite the paper below for the miRNAmeConverter software itself. Please also try to cite the miRBase database.")

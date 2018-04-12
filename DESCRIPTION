@@ -1,8 +1,7 @@
-<<<<<<< HEAD
 Package: miRNAmeConverter
 Type: Package
 Title: Convert miRNA Names to Different miRBase Versions
-Version: 1.1.6
+Version: 1.6.0
 Authors@R: person("Stefan", "Haunsberger", "J.", email =
         "stefan.haunsberger@gmail.com", role = c("aut", "cre"))
 Description: Package containing an S4 class for translating mature
@@ -20,26 +19,3 @@ RoxygenNote: 5.0.1
 NeedsCompilation: no
 Author: Stefan Haunsberger [aut, cre]
 Maintainer: Stefan J. Haunsberger <stefan.haunsberger@gmail.com>
-=======
-Package: miRNAmeConverter
-Type: Package
-Title: Convert miRNA Names to Different miRBase Versions
-Version: 1.7.0
-Authors@R: person("Stefan", "Haunsberger", "J.", email =
-        "stefan.haunsberger@gmail.com", role = c("aut", "cre"))
-Description: Package containing an S4 class for translating mature
-        miRNA names to different miRBase versions, sequence retrieval,
-        checking names for validity and detecting miRBase version of
-        a given set of names (data from http://www.mirbase.org/).
-License: Artistic-2.0
-Imports: DBI, AnnotationDbi
-Depends: miRBaseVersions.db
-biocViews: Preprocessing, miRNA
-LazyData: TRUE
-Suggests: methods, testthat, knitr, rmarkdown
-VignetteBuilder: knitr
-RoxygenNote: 5.0.1
-NeedsCompilation: no
-Author: Stefan Haunsberger [aut, cre]
-Maintainer: Stefan J. Haunsberger <stefan.haunsberger@gmail.com>
->>>>>>> upstream/master

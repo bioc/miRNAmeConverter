@@ -1,0 +1,336 @@
+---
+title: "miRNAmeConverter-vignette"
+author: "Stefan J. Haunsberger"
+date: '`r Sys.Date()`'
+output:
+   pdf_document:
+    toc: yes
+    toc_depth: 3
+    
+csl: apa.csl
+bibliography: references.bib
+vignette: >
+   %\VignetteIndexEntry{miRNAmeConverter-vignette}
+   %\VignetteEncoding{UTF-8}
+   %\VignetteEngine{knitr::rmarkdown}
+---
+
+<!-- output:
+rmarkdown::html_vignette:
+=======
+   rmarkdown::html_vignette:
+    toc: yes
+    toc_depth: 3
+csl: apa.csl
+bibliography: references.bib
+vignette: >
+   %\\VignetteIndexEntry{miRNAmeConverter-vignette}
+   %\\VignetteEncoding{UTF-8}
+   %\\VignetteEngine{knitr::rmarkdown}
+---
+
+<!-- output:
+
+>>>>>>> 1cfa5f21b81f907e68c001cb87b9d7cd9bb3cde4
+   rmarkdown::pdf_document:
+    toc: yes
+    toc_depth: 3--> 
+
+The [miRBase](http://www.mirbase.org) database [@Griffiths-Jones01012004; 
+@Griffiths-Jones01012006; @Griffiths-Jones01012008; @Kozomara01012011; 
+@Kozomara01012014] is the official repository for miRNAs and includes a miRNA 
+naming convention [@AMBROS01032003; @meyers2008criteria].
+Over the years of development miRNAs have been added to, or deleted from the 
+database, while some miRNA names have been changed. As a result, each version 
+of the miRBase database can differ substantially from previous versions. If 
+working with just one or two miRNAs, these can be manually searched on the 
+miRBase website. With larger sets of miRNAs, however, this work becomes labour 
+intensive and prone to mistakes.
+When working with a set of miRNAs, therefore, useful information includes
+
+* if a certain miRNA name exists in the miRBase database.
+* the miRNA sequence in a certain miRBase version.
+* if a given miRNA is still considered to be a miRNA.
+* the miRNA names from the most recent miRBase version
+* the respective miRNA name from a different miRBase version, for using other 
+services, such as miRNA target databases.  
+
+The _miRNAmeConverter_ R package has been developed for handling naming 
+challenges of mature miRNAs.
+
+In addition we have developed a web interface that enables one to use the 
+`translateMiRNAName` function via web interface and is based on shiny 
+([miRNAmeConverter-web](http://www.systemsmedicineireland.ie/tools/mirna-name-converter/)).
+
+  
+## 1. Introduction
+
+The _miRNAmeConverter_ package delivers results in a fast and transparent way. 
+The main functions
+
+- check for validity of mature miRNA names,
+- determine the most likely miRBase version of a given set of miRNAs and
+- translate mature miRNA names to different versions (incl. sequences). 
+
+The core function, translating miRNA names to different versions, is especially 
+useful when dealing with miRNA tools other than miRBase. To retrieve targets 
+from [miRTarBase](http://mirtarbase.mbc.nctu.edu.tw/index.php), for example, 
+the miRNA name from version 20 is required, whereas the website 
+[miRecords](http://c1.accurascience.com/miRecords/) only accepts version 17.
+The miRNAmeConverter can manage large sets of miRNA names and hence can be 
+easily implemented into workflows.
+
+The data set included in the package (_miRNAs_) is a collection of human miRNA 
+names. It consists of valid miRNA names (some duplicates), incorrect names and 
+features used as controls in experiments, such as the RNU44 as a house keeping 
+gene for HT-qPCR assay plates from Applied Biosystems.  
+  
+To load the package and gain access to the functions and sample dataset of the 
+miRNAmeConverter package just run the following command:
+
+```{r highlight = TRUE}
+library(miRNAmeConverter)
+```
+
+#### Citing miRNAmeConverter
+To give the authors professional credit for their work, please try to cite the
+publication when you use the miRNAmeConverter:
+
+```{r highlight = TRUE}
+citation("miRNAmeConverter")
+```
+
+#### Vignette Info
+
+This vignette has been generated using an R Markdown file with 
+`knitr:rmarkdown` as vignette engine [@bibtex; @knitr1; @knitr2; @knitr3; 
+@knitcitations].
+
+#### Database information
+
+The data used in the _miRNAmeConverter_ package is obtained from the 
+`miRBaseVersions.db` annotation package [@mirbaseversionscite].
+
+#### <a name="data-input"></a>miRNA name input values
+
+According to the nomenclature used in the miRBase repository `hsa-mir-29a` is a 
+stem-loop sequence name. If we substitute the 'r' by a capital 'R' it
+codes for the mature 3' miRNA `hsa-miR-29a` (or `hsa-miR-29a-5p` in the current 
+version). The `miRNAs` input value for the functions has to 
+be in form of a `character` vector. Algorithms of the package are __not__ case 
+sensitive. This has the effect, that for example in the case `hsa-mir-29a` and 
+`hsa-miR-29a` as input values both will be considered as valid mature miRNA 
+names.
+
+## 2. The MiRNANameConverter class
+
+The MiRNANameConverter class is coded in S4 style. All functions offered by 
+the miRNAmeConverter package are methods of that class. The following figure
+is a simplified class diagram with the exported methods and class attributes:
+
+<!-- 
+<div style="text-align:center" markdown="1">
+   <img src="class-diagram.png" alt="class-diagram"
+         title="Class diagram of the MiRNANameConverter class" style="width: 200px;"/>
+</div>
+-->
+![class-diagram](class-diagram.png)
+
+All methods can be displayed by
+```{r highlight = TRUE}
+ls("package:miRNAmeConverter");
+```
+
+The slot names (attributes) of the class can be displayed by
+```{r highlight = TRUE}
+slotNames("MiRNANameConverter");
+```
+
+An instance of the `MiRNANameConverter` class can be created by calling the 
+`MiRNANameConverter` function:
+```{r highlight = TRUE}
+MiRNANameConverter();
+```
+
+
+## 3. Use Cases
+
+### 3.1 Check for valid miRNA name
+
+#### Valid input values
+
+We have given a set of mature miRNA names `miRNAs` and would like to check if
+the names are actual miRNA names that
+are or were listed in any miRBase version. Our `miRNAs` have the following 
+values:
+```{r highlight=TRUE}
+miRNAs = c("hsa-miR-422b", "mmu-mir-872", "gra-miR157b", "cel-miR-56*");
+```
+Our first step is to create an instance of the `MiRNANameConverter` class by 
+calling the constructor and saving it to the
+variable `nc`.
+```{r highlight = TRUE}
+nc = MiRNANameConverter();
+```
+Now we check if the names are valid names listed in any of the provided miRBase 
+versions:
+```{r highlight = TRUE}
+checkMiRNAName(nc, miRNAs);
+```
+
+#### Mixed input values
+
+The following set of miRNA names contains valid as well as invalid names.
+
+```{r highlight = TRUE}
+# "RNU-6" and "bpcv1-miR-B23" are not valid
+miRNAs = c("hsa-miR-422b", "RNU-6", "mmu-miR-872", "gra-miR157b", "bpcv1-miR-B23", "bpcv1-miR-B1");
+nc = MiRNANameConverter();    # Create MiRNANameConverter object
+checkMiRNAName(nc, miRNAs);   # check names
+```
+This time the function prints information for the features that did not pass 
+the check and therefore are not included in the return value.
+
+### 3.2 Assess most likely miRBase version
+
+Sometimes it is useful to know the miRBase version that a given set of miRNA 
+names is from. In this case one can use the `assessVersion` function to receive 
+the most likely miRBase version. The following example makes use of the 
+provided `example-miRNAs`-dataset.
+
+```{r highlight = TRUE}
+nc = MiRNANameConverter();             # Create MiRNANameConverter object
+assessVersion(nc, example.miRNAs);     # Assess most likely miRBase version
+```
+The console output shows that from the `r length(example.miRNAs)` input names 
+there were `r length(unique(example.miRNAs))` unique values. Five of these 
+values are not listed in any miRBase version and were neglected. The return 
+value is a data.frame object with the two columns `version` and `frequency`. 
+It is ordered by frequency and version. It shows that 347 out of 350 valid 
+input miRNAs could be assigned to miRBase version 9.0. This is the highest 
+score and therefore the most likely miRBase version of the input mature 
+miRNA names.
+
+### 3.3 Translate miRNA name(s) and their sequence(s)
+
+Translating miRNA names to different versions is the most required function. 
+Let us assume we found a paper that shows that the miRNA `"hsa-miR-422b"` is 
+significantly differentially expressed under certain conditions. Assume further, 
+that we did a similar experiment but this miRNA does not show up in our analysis. 
+Instead we got `"hsa-miR-378a-3p"` from miRBase version 21. We see, that the 
+previous paper was released a couple of years ago so there might be a chance 
+that their miRNA could now run under a different name. We apply the 
+`translateMiRNAName` function with `hsa-miR-422b` as miRNA parameter and no 
+version. With no given version the function returns the miRBase version 21 
+by default.
+```{r highlight = TRUE}
+miRNA.paper = "hsa-miR-422b";
+nc = MiRNANameConverter();             # Create MiRNANameConverter object
+translateMiRNAName(nc, miRNA.paper);   # Translate miRNA names
+```
+
+The result shows that these two miRNAs are actually the same. This is because 
+`"hsa-miR-422b"` is last listed in miRBase version 9.2. In version 10.0 it was 
+named `"hsa-miR-378"` which in the current version 21.0 runs under the name 
+`"hsa-miR-378a-3p"`.
+
+Another example with more diverse input names is shown below, with the 
+respective console output and the entry in the attribute `description`.
+```{r highlight = TRUE}
+miRNAs = c("hsa-miR-128b", "hsa-miR-213", "mmu-miR-302b*", 
+           "mmu-miR-872", "ebv-miR-BART5", "bpcv1-miR-B23");
+nc = MiRNANameConverter();              # Create MiRNANameConverter object
+result = translateMiRNAName(            # Translate names
+                            nc
+                            ,miRNAs
+                            ,sequenceFormat = 1
+                            ,versions = c(8, 8.1, 18, 21)
+                            );        
+```
+
+The console output shows us that one of the input values is not a miRNA 
+(`"bpcv1-miR-B23"`) and another is not listed in miRBase version 21 
+(`"hsa-miR-128b"`).
+
+```{r highlight = TRUE}
+result;
+```
+
+#### Attribute `description`
+
+The information, whether a miRNA is OK or not, is stored in form of 
+an attribute of the return value of the function. This `data.frame` object 
+provides information about every single input value and can be accessed via 
+the `attr` command followed by `'description'`.
+```{r highlight = TRUE}
+attr(result, 'description');
+```
+
+#### Attribute `sequences`
+
+Sometimes it can be useful to confirm the sequence of miRNAs for selected
+miRBase versions. In such a case all we have to do is checking out the
+`sequence` attribute of our translation result.
+```{r highlight = TRUE}
+attr(result, 'sequence');
+```
+Due to the fact that we called the `translateMiRNAName` function with the
+parameter `sequenceFormat = 1` the attribute only contains the sequence for
+each version respectively. If we would like to have miRNA name and sequence
+combined in one table we can call the `translateMiRNAName` function with
+`sequenceFormat = 2`.
+```{r highlight = TRUE}
+result = translateMiRNAName(            # Translate names
+                            nc
+                            ,miRNAs
+                            ,sequenceFormat = 2
+                            ,versions = c(17, 19, 21)
+                            );
+attr(result, 'sequence');
+```
+
+### 3.4 Other functions
+
+#### Save translation results
+
+Sometimes it is useful to save a variable to a file. Taking the translation 
+`result` from above we can do so by running the following command with default 
+settings:
+```{r highlight = TRUE, eval=FALSE}
+saveResults(nc, result);
+```
+Three files will be saved, the miRNA name translation result, the description 
+and sequence. By default the files are tab-separated files without the parameter 
+`quote` set to `FALSE`. Other options can be applied and will be passed on to 
+the `utils::write.table` function.
+
+#### Getter functions
+
+Other functions are so called getter-functions to receive the values of the 
+class attributes `current.version` and `valid.versions` respectively.
+```{r highlight = TRUE}
+nc = MiRNANameConverter();   # Create MiRNANameConverter object
+currentVersion(nc);          # Receive the maximum miRBase version included in the package
+validVersions(nc);           # Receive all valid versions
+nOrganisms(nc);              # Number of organisms
+validOrganisms(nc);          # Valid organisms
+```
+
+## Additional information
+
+### Packages loaded via namespace
+The following packages are used in the `miRNAmeConverter` package: 
+
+* AnnotationDbi_1.32.3 [@annotdbicite]
+* miRBaseVersions.db annotation package [@mirbaseversionscite]
+* RSQLite_1.0.0 [@rsqlitecite]
+* tools_3.2.5 [@toolscite]
+
+### Future Aspects
+This tool can only offer good functionality if it will be kept up to date.
+Therefore we plan to include new miRBase releases as soon as possible.
+
+## References {-}
+
+
+
