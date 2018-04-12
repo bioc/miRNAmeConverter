@@ -25,7 +25,7 @@ test_that("Checking only miRNA name return value", {
 			#              "hsa-let-7a-3p", "RNU-6");
 			# target = c("hsa-let-7a-5p", "hsa-miR-378a-3p");
 
-			expect_equal((translateMiRNAName(nc, miRNAs, verbose = FALSE))$v21.0,
+			expect_equal((translateMiRNAName(nc, miRNAs, versions = c(21.0), verbose = FALSE))$v21.0,
 			             target);
 
 		});
@@ -76,7 +76,7 @@ test_that("Checking attribute 'description' and 'sequence'", {
 			                             "MIMAT0004934"),
 			               stringsAsFactors = FALSE);
 			
-			expect_equal(translateMiRNAName(nc, miRNAs, verbose = FALSE), target);
+			expect_equal(translateMiRNAName(nc, miRNAs, versions = c(21.0), verbose = FALSE), target);
 
 		});
 
@@ -129,6 +129,7 @@ test_that("Checking attribute 'description' as well incl. sequenceFormat=2", {
 		                                        "v21.0-Sequence");
 			expect_equal(translateMiRNAName(nc,
 			                                miRNAs,
+			                                versions = c(21.0), 
 			                                sequenceFormat = 2,
 			                                verbose = FALSE), target);
 
