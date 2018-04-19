@@ -411,7 +411,7 @@ attr(result, 'sequence');
 
 In cases where one has a dataframe with expression values and miRNA names from 
 a particular miRBase version it can be easier to just 'join' a second dataframe 
-with valid miRNA names, such as from v18 to v22.
+with valid miRNA names, such as from v17 to v22.
 
 ```r
 mirs = data.frame(
