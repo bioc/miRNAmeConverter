@@ -1069,7 +1069,7 @@ setMethod(
     
     # Send SQL request
     mirDf =
-      DBI::dbGetQuery(conn = .dbconn(this),
+      DBI::dbGetQuery(conn = this@.dbconn,
       sprintf("SELECT accession, name, version, organism
               FROM %s
               WHERE version IN (%s) AND organism IN (\"%s\")

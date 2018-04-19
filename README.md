@@ -418,11 +418,13 @@ mirs = data.frame(
         valuex = c(22.3, 21.5, 89.6), 
         mirna = c("hsa-miR-29a", "hsa-let-7f", "hsa-miR-181a*"))
 nc = MiRNANameConverter();             # Create MiRNANameConverter object
-x = getMirbaseVersionsXandY(nc, version = c(17, 22))
+x = getMirbaseVersionsXandY(nc, version = 17)
 merge(mirs, x, by.x = "mirna", by.y = "v17")
 ```
 
 In the case where miRNAs are assigned to multiple accessions, records will be neglected.
+
+
 
 ### Assess most likely miRBase version
 

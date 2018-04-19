@@ -9,7 +9,7 @@ Description: Translating mature miRNA names to different
         checking names for validity and detecting miRBase version of
         a given set of names (data from http://www.mirbase.org/).
 License: Artistic-2.0
-Imports: DBI, AnnotationDbi
+Imports: DBI, AnnotationDbi, reshape2
 Depends: miRBaseVersions.db
 biocViews: Preprocessing, miRNA
 LazyData: TRUE

@@ -1,3 +1,20 @@
+CHANGES IN VERSION 1.7.2
+------------------------
+
+NEW FEATURES
+
+    o getMirbaseVersionsXandY: Retrieve all mature or precursor miRNA 
+      names from one or several miRBase version(s) and species
+
+SIGNIFICANT USER-LEVEL CHANGES
+
+    o Updated vignette
+
+DEPRECATED AND DEFUNCT
+
+    o
+
+
 CHANGES IN VERSION 1.3.1
 ------------------------
 
