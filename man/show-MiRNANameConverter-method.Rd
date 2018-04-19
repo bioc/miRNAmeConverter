@@ -19,10 +19,9 @@ This function prints object specific information
 \details{
 This function prints some information to the console.
 }
-\author{
-Stefan Haunsberger
-}
 \seealso{
 \code{\link{show}}
 }
-
+\author{
+Stefan Haunsberger
+}

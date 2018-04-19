@@ -46,6 +46,7 @@ The attribute 'description' of the data frame will be stored as well.
 \itemize{
 \item \code{this = MiRNANameConverter,df = data.frame}: Method for saving translation results
 }}
+
 \examples{
 nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
 res = translateMiRNAName(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"),
@@ -54,11 +55,10 @@ res = translateMiRNAName(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"),
 saveResults(nc, res)
 
 }
-\author{
-Stefan Haunsberger
-}
 \seealso{
 \code{\link{write.table}} for additional parameter values for
 the '...' argument, \code{\link{attr}} for how to retrieve attributes
 }
-
+\author{
+Stefan Haunsberger
+}

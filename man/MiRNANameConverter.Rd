@@ -29,7 +29,7 @@ miRBase release versions in the \emph{miRBaseVersions.db} package.}
 
 \item{\code{.validOrganisms}}{Valid organisms}
 }}
+
 \author{
 Stefan Haunsberger
 }
-

@@ -42,16 +42,16 @@ miRBase releases, the \code{\link{assessVersion}},
          of mature miRNA names.
 }
 }
+
 \examples{
 # Translate a mature miRNA name to miRBase version 21.0
 nc = MiRNANameConverter(); # Object instantiation
 translateMiRNAName(nc, "hsa-miR-29a", version = 21.0)
 }
-\author{
-Stefan Haunsberger \email{stefanhaunsberger@rcsi.ie}
-}
 \seealso{
 \emph{miRBaseVersions.db} for more information about the
 database holding all major miRBase release versions)
 }
-
+\author{
+Stefan Haunsberger \email{stefanhaunsberger@rcsi.ie}
+}

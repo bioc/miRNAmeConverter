@@ -62,6 +62,7 @@ The translation and sequence retrieval are done in 5 main steps:
 \item \code{this = MiRNANameConverter,miRNAs = character}: Method for translating miRNA name(s) to
 different miRBase versions
 }}
+
 \examples{
 nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
 res = translateMiRNAName(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"),
@@ -69,10 +70,9 @@ res = translateMiRNAName(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"),
 res
 attributes(res)
 }
-\author{
-Stefan Haunsberger
-}
 \seealso{
 \code{\link{attr}} for attributes
 }
-
+\author{
+Stefan Haunsberger
+}

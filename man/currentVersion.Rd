@@ -28,6 +28,7 @@ in the object initialization.
 \itemize{
 \item \code{MiRNANameConverter}: Retrieve highest supported miRBase version
 }}
+
 \examples{
 nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
 currentVersion(nc);
@@ -35,4 +36,3 @@ currentVersion(nc);
 \author{
 Stefan Haunsberger
 }
-

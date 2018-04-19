@@ -28,6 +28,7 @@ in the object initialization.
 \itemize{
 \item \code{MiRNANameConverter}: Retrieve number of organisms
 }}
+
 \examples{
 nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
 nOrganisms(nc);
@@ -35,4 +36,3 @@ nOrganisms(nc);
 \author{
 Stefan Haunsberger
 }
-

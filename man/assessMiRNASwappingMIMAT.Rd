@@ -38,4 +38,3 @@ be comprised in the return vector.
 \author{
 Stefan Haunsberger
 }
-

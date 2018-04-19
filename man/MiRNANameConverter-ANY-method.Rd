@@ -21,10 +21,9 @@ wrapper for \code{new()}.
 nc = MiRNANameConverter() # Instance of class 'MiRNANameConverter'
 
 }
-\author{
-Stefan Haunsberger
-}
 \seealso{
 \code{\link{new}}
 }
-
+\author{
+Stefan Haunsberger
+}

@@ -27,6 +27,7 @@ The valid organisms are evaluated and set in the object initialization.
 \itemize{
 \item \code{MiRNANameConverter}: Retrieve all supported organisms
 }}
+
 \examples{
 nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
 nOrganisms(nc);
@@ -34,4 +35,3 @@ nOrganisms(nc);
 \author{
 Stefan Haunsberger
 }
-

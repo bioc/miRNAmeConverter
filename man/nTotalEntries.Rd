@@ -28,6 +28,7 @@ The total number is evaluated and set in the object initialization.
 \itemize{
 \item \code{MiRNANameConverter}: Retrieve total number of miRNA entries
 }}
+
 \examples{
 nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
 nTotalEntries(nc);
@@ -35,4 +36,3 @@ nTotalEntries(nc);
 \author{
 Stefan Haunsberger
 }
-

@@ -25,4 +25,3 @@ initialized in the initialization method when an instance of a
 \author{
 Stefan Haunsberger
 }
-

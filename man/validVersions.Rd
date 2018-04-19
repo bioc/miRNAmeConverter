@@ -24,6 +24,7 @@ provided by the package.
 \itemize{
 \item \code{MiRNANameConverter}: Retrieve supported miRBase versions
 }}
+
 \examples{
 validVersions
 nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
@@ -32,4 +33,3 @@ validVersions(nc);
 \author{
 Stefan Haunsberger
 }
-

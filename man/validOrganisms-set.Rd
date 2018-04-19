@@ -24,4 +24,3 @@ The valid organisms are evaluated and set in the object initialization.
 \author{
 Stefan Haunsberger
 }
-

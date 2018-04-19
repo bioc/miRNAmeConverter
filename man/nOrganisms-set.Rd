@@ -25,4 +25,3 @@ in the object initialization.
 \author{
 Stefan Haunsberger
 }
-

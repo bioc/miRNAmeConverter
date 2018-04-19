@@ -1009,3 +1009,90 @@ setMethod(
    }
 )
 
+##### getMirbaseVersionsXandY ####
+#' @title Retrieve two complete miRBase versions in a dataframe
+#'
+#' @description Return a dataframe with miRNA names from two miRBase
+#' release versions in two columns (e.g. useful for joining with other 
+#' existing dataframe).
+#'
+#' @param this Object of class 'MiRNANameConverter'
+#' @param version Numeric vector for first miRBase version (default: max version)
+#' @param type Character with either \code{'mi'} or \code{'mimat'} for 
+#' precursor miRNA or mature miRNA names respectively (default: 'mimat')
+#' @param species Character or character vector, such as \code{'hsa'} or \code{c('hsa', 'mmu')} (default: \code{'hsa'})
+#' information (FALSE)
+#' @return A dataframe
+#'
+#' @examples
+#' nc = MiRNANameConverter() # Instance of class 'MiRNANameConverter'
+#' getMirbaseVersionsXandY(nc, version = c(18, 22))
+#'
+#' @importFrom DBI dbGetQuery
+#' @author Stefan J. Haunsberger
+#' @rdname getMirbaseVersionsXandY
+#' @export
+setGeneric(
+  name = "getMirbaseVersionsXandY",
+  def = function(this,
+                 version,
+                 type = "mimat",
+                 species = "hsa",
+                 addLatestVersion = TRUE) {
+    standardGeneric("getMirbaseVersionsXandY");
+  }
+)
+
+#' @describeIn checkMiRNAName Method for checking for valid miRNA names
+setMethod(
+  f = "getMirbaseVersionsXandY",
+  signature("MiRNANameConverter"),
+  definition = function(this,
+                        version,
+                        type,
+                        species,
+                        addLatestVersion) {
+
+    args = as.list(match.call());
+    
+    if (is.null(args$version)) {
+      version = this@.currentVersion;
+    }
+    
+    if (addLatestVersion) {
+      version = c(version, this@.currentVersion);
+    }
+    
+    if (!(type %in% c("mi", "mimat"))) {
+      stop(paste("type", type, "not supported (supported are 'mi' and 'mimat')"));
+    }
+    
+    # Send SQL request
+    mirDf =
+      DBI::dbGetQuery(conn = .dbconn(this),
+      sprintf("SELECT accession, name, version, organism
+              FROM %s
+              WHERE version IN (%s) AND organism IN (\"%s\")
+              ORDER BY version ASC",
+              type,
+              paste(version, collapse = ", "), paste(species, collapse = "\", \"")));
+    mirDf$version = paste0("v", mirDf$version);
+    
+    miRNAs.swapping = suppressMessages(assessMiRNASwappingMIMAT(this,mirDf$name));
+    miRNAs.not.swapping = mirDf$name[!(mirDf$name %in% miRNAs.swapping)];
+    
+    if (length(miRNAs.swapping) > 0) {
+      if (length(miRNAs.swapping) == 1) {
+        message("\tFollowing miRNA will be neglected due to non unique MIMAT accession:");
+      } else {
+        message("\tFollowing miRNAs will be neglected due to non unique MIMAT accession:");
+      }
+      message(paste0(miRNAs.swapping, collapse = "; "));
+    }
+    mirDf = mirDf[!(mirDf$name %in% miRNAs.swapping),];
+    
+    mirDfW = reshape2::dcast(mirDf, accession + organism ~ version, value.var = "name");
+    
+    return(mirDfW);
+})
+

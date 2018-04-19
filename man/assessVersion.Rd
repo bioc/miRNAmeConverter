@@ -42,6 +42,7 @@ that passes the check will be further processed.
 \item \code{MiRNANameConverter}: Method for assessing the most likely miRBase
 version that a given set of miRNA names is from.
 }}
+
 \examples{
 nc = MiRNANameConverter(); # Instance of class 'MiRNANameConverter'
 assessVersion(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"))
@@ -50,4 +51,3 @@ assessVersion(nc, miRNAs = c("hsa-miR-140", "hsa-miR-125a"))
 \author{
 Stefan Haunsberger
 }
-
