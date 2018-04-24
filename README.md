@@ -144,10 +144,11 @@ ls("package:miRNAmeConverter");
 ```
 
 ```
-##  [1] "assessVersion"      "checkMiRNAName"     "currentVersion"    
-##  [4] "example.miRNAs"     "MiRNANameConverter" "nOrganisms"        
-##  [7] "nTotalEntries"      "saveResults"        "show"              
-## [10] "translateMiRNAName" "validOrganisms"     "validVersions"
+#  [1] "assessVersion"           "checkMiRNAName"          "currentVersion"         
+#  [4] "example.miRNAs"          "getMirbaseVersionsXandY" "MiRNANameConverter"     
+#  [7] "nOrganisms"              "nTotalEntries"           "saveResults"            
+# [10] "show"                    "translateMiRNAName"      "validOrganisms"         
+# [13] "validVersions"          
 ```
 
 The slot names (attributes) of the class can be displayed by
@@ -418,7 +419,7 @@ mirs = data.frame(
         valuex = c(22.3, 21.5, 89.6), 
         mirna = c("hsa-miR-29a", "hsa-let-7f", "hsa-miR-181a*"))
 nc = MiRNANameConverter();             # Create MiRNANameConverter object
-x = getMirbaseVersionsXandY(nc, version = 17)
+x = getMirnasForMirbaseVersion(nc, version = 17)
 merge(mirs, x, by.x = "mirna", by.y = "v17")
 ```
 

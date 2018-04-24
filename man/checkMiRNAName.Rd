@@ -4,15 +4,11 @@
 \name{checkMiRNAName}
 \alias{checkMiRNAName}
 \alias{checkMiRNAName,MiRNANameConverter-method}
-\alias{getMirbaseVersionsXandY,MiRNANameConverter-method}
 \title{Check miRNA names for validity}
 \usage{
 checkMiRNAName(this, miRNAs, verbose = FALSE)
 
 \S4method{checkMiRNAName}{MiRNANameConverter}(this, miRNAs, verbose = FALSE)
-
-\S4method{getMirbaseVersionsXandY}{MiRNANameConverter}(this, version,
-  type = "mimat", species = "hsa", addLatestVersion = TRUE)
 }
 \arguments{
 \item{this}{Object of class 'MiRNANameConverter'}
@@ -41,8 +37,6 @@ miRNA was detected, a \code{character(0)} will be returned.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{MiRNANameConverter}: Method for checking for valid miRNA names
-
 \item \code{MiRNANameConverter}: Method for checking for valid miRNA names
 }}
 

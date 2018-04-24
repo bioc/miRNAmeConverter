@@ -42,7 +42,7 @@
 #' # Translate a mature miRNA name to miRBase version 21.0
 #' nc = MiRNANameConverter(); # Object instantiation
 #' translateMiRNAName(nc, "hsa-miR-29a", version = 21.0)
-#' @import DBI miRBaseVersions.db AnnotationDbi
+#' @import DBI miRBaseVersions.db AnnotationDbi reshape2
 NULL
 
 # source("R/tools/printFunctionEntryInformation.R");
@@ -1009,43 +1009,43 @@ setMethod(
    }
 )
 
-##### getMirbaseVersionsXandY ####
+##### getMirnasForMirbaseVersion ####
 #' @title Retrieve two complete miRBase versions in a dataframe
 #'
-#' @description Return a dataframe with miRNA names from two miRBase
-#' release versions in two columns (e.g. useful for joining with other 
-#' existing dataframe).
+#' @description Return a dataframe with miRNA names from desired miRBase
+#' release versions (e.g. useful for joining with other existing dataframe).
 #'
 #' @param this Object of class 'MiRNANameConverter'
-#' @param version Numeric vector for first miRBase version (default: max version)
+#' @param version Numeric vector with miRBase version (default: max version)
 #' @param type Character with either \code{'mi'} or \code{'mimat'} for 
 #' precursor miRNA or mature miRNA names respectively (default: 'mimat')
 #' @param species Character or character vector, such as \code{'hsa'} or \code{c('hsa', 'mmu')} (default: \code{'hsa'})
-#' information (FALSE)
+#' @param addLatestVersion If max-supported miRBase version is added to result set information (TRUE)
+#' 
 #' @return A dataframe
 #'
 #' @examples
 #' nc = MiRNANameConverter() # Instance of class 'MiRNANameConverter'
-#' getMirbaseVersionsXandY(nc, version = c(18, 22))
+#' getMirnasForMirbaseVersion(nc, version = c(18))
 #'
 #' @importFrom DBI dbGetQuery
 #' @author Stefan J. Haunsberger
-#' @rdname getMirbaseVersionsXandY
+#' @rdname getMirnasForMirbaseVersion
 #' @export
 setGeneric(
-  name = "getMirbaseVersionsXandY",
+  name = "getMirnasForMirbaseVersion",
   def = function(this,
                  version,
                  type = "mimat",
                  species = "hsa",
                  addLatestVersion = TRUE) {
-    standardGeneric("getMirbaseVersionsXandY");
+    standardGeneric("getMirnasForMirbaseVersion");
   }
 )
 
-#' @describeIn checkMiRNAName Method for checking for valid miRNA names
+#' @describeIn getMirnasForMirbaseVersion Method for getting all miRNA names from desired miRBase version(s)
 setMethod(
-  f = "getMirbaseVersionsXandY",
+  f = "getMirnasForMirbaseVersion",
   signature("MiRNANameConverter"),
   definition = function(this,
                         version,
